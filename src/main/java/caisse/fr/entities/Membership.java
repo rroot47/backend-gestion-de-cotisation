@@ -1,6 +1,7 @@
 package caisse.fr.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,5 +17,6 @@ public class Membership {
     private String year;
     private double amount;
     @ManyToOne
+    @JsonBackReference
     private Member member;
 }

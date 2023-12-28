@@ -1,5 +1,6 @@
 package caisse.fr.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,6 +23,7 @@ public class Member {
     private String domicile;
     private  double amountMembership;
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Membership>  memberships =new ArrayList<>();
     private double totalMount=0;
 }

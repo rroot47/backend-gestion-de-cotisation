@@ -1,9 +1,6 @@
 package caisse.fr.services;
 
-import caisse.fr.dto.member.AllMemberDTO;
-import caisse.fr.dto.member.PaginationMemberDTO;
-import caisse.fr.dto.member.RequestMemberDTO;
-import caisse.fr.dto.member.ResponseMemberDTO;
+import caisse.fr.dto.member.*;
 import caisse.fr.dto.membership.RequestMembershipDTO;
 import caisse.fr.dto.membership.ResponseMembershipDTO;
 import caisse.fr.entities.Member;
@@ -20,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -47,7 +45,6 @@ public class MemberService {
         member.setAmountMembership(requestMemberDTO.getAmountMembership());
         for(RequestMembershipDTO requestMembershipDTO: requestMemberDTO.getRequestMembershipDTOS()){
             sommeMembership = setSommeMembership(sommeMembership, requestMembershipDTOS, member, memberships, requestMembershipDTO);
-
         }
         somme+=member.getAmountMembership()+sommeMembership;
         member.setTotalMount(somme);
@@ -208,4 +205,31 @@ public class MemberService {
         messageDelete.put("message", "the memeber is deleted with success");
         return messageDelete;
     }
+    public List<ResponseMemberForAGivenYearDTO> getMemberByYearMembership(String year){
+        List<Member> memberList = memberRepository.getMembersByMembershipYear(year);
+        ResponseMemberForAGivenYearDTO responseMemberForAGivenYearDTO = new ResponseMemberForAGivenYearDTO();
+        List<ResponseMemberForAGivenYearDTO> responseMemberForAGivenYearDTOArrayList = new ArrayList<>();
+        responseMemberForAGivenYearDTO.setMembers(memberList);
+        responseMemberForAGivenYearDTOArrayList.add(responseMemberForAGivenYearDTO);
+        return responseMemberForAGivenYearDTOArrayList;
+    }
+
+    public List<ResponseMemberForAGivenYearDTO> getMembersByYear1(String year, int page, int size){
+        ResponseMemberForAGivenYearDTO responseMemberForAGivenYearDTO = new ResponseMemberForAGivenYearDTO();
+        List<ResponseMemberForAGivenYearDTO> responseMemberForAGivenYearDTOArrayList = new ArrayList<>();
+        PageRequest pageable = PageRequest.of(page, size);
+        Page<Member> memberPage = memberRepository.findMembersByYear(year, pageable);
+        List<Member>  memberList = memberPage.getContent();
+        responseMemberForAGivenYearDTO.setCurrentPage(page);
+        responseMemberForAGivenYearDTO.setPageSize(size);
+        responseMemberForAGivenYearDTO.setTotalPages(memberPage.getTotalPages());
+        responseMemberForAGivenYearDTO.setMembers(memberList);
+        responseMemberForAGivenYearDTOArrayList.add(responseMemberForAGivenYearDTO);
+        return responseMemberForAGivenYearDTOArrayList;
+    }
+    public Page<Member> getMembersByYear(String year, int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size);
+        return memberRepository.findMembersByYear(year, pageable);
+    }
+
 }
