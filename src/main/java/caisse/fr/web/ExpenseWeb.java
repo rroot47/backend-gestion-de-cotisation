@@ -1,5 +1,6 @@
 package caisse.fr.web;
 
+import caisse.fr.dto.expense.PaginationExpenseDTO;
 import caisse.fr.dto.expense.RequestExpenseDTO;
 import caisse.fr.dto.expense.ResponseExpenseDTO;
 import caisse.fr.services.ExpenseService;
@@ -35,8 +36,9 @@ public class ExpenseWeb {
     }
 
     @GetMapping("/expense/allExpenses")
-    public List<ResponseExpenseDTO> findAllExpense(){
-        return expenseService.getAllExpense();
+    public PaginationExpenseDTO findAllExpense(@RequestParam(value = "page", defaultValue = "0") int page,
+                                               @RequestParam(value = "size", defaultValue = "10") int size){
+        return expenseService.getAllExpenses(page, size);
     }
 
     @GetMapping("/expense/getExpenseById/{expense_id}")

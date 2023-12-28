@@ -1,9 +1,14 @@
 package caisse.fr.services;
 
+import caisse.fr.dto.expense.PaginationExpenseDTO;
 import caisse.fr.dto.expense.RequestExpenseDTO;
 import caisse.fr.dto.expense.ResponseExpenseDTO;
+import caisse.fr.dto.member.PaginationMemberDTO;
 import caisse.fr.entities.Expense;
 import caisse.fr.ripository.ExpenseRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,6 +66,30 @@ public class ExpenseService {
             responseExpenseDTOList.add(responseExpenseDTO);
         }
         return responseExpenseDTOList;
+    }
+    public PaginationExpenseDTO getAllExpenses(int page, int size){
+        PaginationExpenseDTO paginationExpenseDTO = new PaginationExpenseDTO();
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Expense> expensePage = expenseRepository.findAll(pageable);
+        List<Expense> expenseList = expensePage.getContent();
+        List<ResponseExpenseDTO>  responseExpenseDTOList = new ArrayList<>();
+
+        for(Expense expense:expenseList){
+            ResponseExpenseDTO responseExpenseDTO= new ResponseExpenseDTO();
+            responseExpenseDTO.setId(expense.getId());
+            responseExpenseDTO.setTypeExpense(expense.getTypeExpense());
+            responseExpenseDTO.setDescription(expense.getDescription());
+            responseExpenseDTO.setFirstName(expense.getFirstName());
+            responseExpenseDTO.setLastName(expense.getLastName());
+            responseExpenseDTO.setDate(expense.getDate());
+            responseExpenseDTO.setSomme(expense.getSomme());
+            responseExpenseDTOList.add(responseExpenseDTO);
+        }
+        paginationExpenseDTO.setCurrentPage(page);
+        paginationExpenseDTO.setPageSize(size);
+        paginationExpenseDTO.setTotalPages(expensePage.getTotalPages());
+        paginationExpenseDTO.setResponseExpenseDTOS(responseExpenseDTOList);
+        return paginationExpenseDTO;
     }
 
     public ResponseExpenseDTO getExpense(Long expense_id){

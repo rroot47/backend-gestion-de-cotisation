@@ -3,10 +3,13 @@ package caisse.fr.web;
 import caisse.fr.dto.member.PaginationMemberDTO;
 import caisse.fr.dto.member.RequestMemberDTO;
 import caisse.fr.dto.member.ResponseMemberDTO;
+import caisse.fr.dto.member.ResponseMemberForAGivenYearDTO;
 import caisse.fr.dto.membership.ResponseMembershipDTO;
+import caisse.fr.entities.Member;
 import caisse.fr.services.MemberService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -59,5 +62,20 @@ public class MemberWeb {
     @DeleteMapping("/member/deleteMemberById/{member_id}")
     public Map<String, String> removeMember(@PathVariable Long member_id){
         return memberService.deleteMember(member_id);
+    }
+
+    @GetMapping("/member/getMembersByYearMembership/{year}")
+    public  List<ResponseMemberForAGivenYearDTO> findMemberByYearMembership(@PathVariable String year,
+    @RequestParam(value = "page", defaultValue = "0") int page,
+    @RequestParam(value = "size", defaultValue = "10") int size){
+        return memberService.getMembersByYear1(year, page, size);
+    }
+
+    @GetMapping("/member/by-year/{year}")
+    public Page<Member> getMembersByYear(
+            @PathVariable String year,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
+        return memberService.getMembersByYear(year, page, size);
     }
 }
